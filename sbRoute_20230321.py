@@ -164,3 +164,14 @@ print ('Created: _{}_output_{}.pdf'.format(orderType, current_time))
 # remove canvas files
 for f in glob.glob("canvas*.pdf"):
     os.remove(f)
+
+# file compression
+reader = PdfFileReader(f'{outputName}')
+writer = PdfFileWriter()
+
+for page in reader.pages:
+    page.compressContentStreams()  # This is CPU intensive!
+    writer.addPage(page)
+
+with open(f'{outputName}', "wb") as f:
+    writer.write(f)
