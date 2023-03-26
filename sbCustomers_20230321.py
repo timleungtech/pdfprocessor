@@ -39,3 +39,14 @@ print ('Created: _{}_output.pdf'.format(orderType)) # logs the filename of merge
 
 for f in glob.glob("input*.pdf"): # remove all files with names beginning with input
     os.remove(f)
+
+# file compression
+reader = PdfFileReader(f'{outputName}')
+writer = PdfFileWriter()
+
+for page in reader.pages:
+    page.compressContentStreams()  # This is CPU intensive!
+    writer.addPage(page)
+
+with open(f'{outputName}', "wb") as f:
+    writer.write(f)
