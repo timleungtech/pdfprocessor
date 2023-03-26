@@ -41,12 +41,12 @@ for f in glob.glob("input*.pdf"): # remove all files with names beginning with i
     os.remove(f)
 
 # file compression
-reader = PdfFileReader(f'{outputName}')
+reader = PdfFileReader(f'_{orderType}_output.pdf')
 writer = PdfFileWriter()
 
 for page in reader.pages:
     page.compressContentStreams()  # This is CPU intensive!
     writer.addPage(page)
 
-with open(f'{outputName}', "wb") as f:
+with open(f'_{orderType}_output.pdf', "wb") as f:
     writer.write(f)
