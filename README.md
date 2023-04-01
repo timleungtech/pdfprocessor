@@ -11,6 +11,6 @@ This script runs at O(n) time complexity. Hash tables are included in the beginn
 
 ## Room for improvement
 * Optimize the space complexity by compressing the outputted PDF files. The new PDF created after both the PyPDF merger process and inserting the ReportLab watermark process is almost 10x in size.
-* Connect the script to a more user-friendly front end interface.
+* ~~Connect the script to a more user-friendly front end interface.~~ View full app here: https://github.com/timleungtech/pdf-processor-react-flask
 
 ![sample](https://github.com/timleungtech/pdfprocessor/blob/master/sample.jpg)
