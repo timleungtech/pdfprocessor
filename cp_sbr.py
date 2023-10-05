@@ -147,8 +147,8 @@ with pdfplumber.open('input.pdf') as pdf:
         can.setPageSize((850, 600))
         can.drawString(12, -770, f'{customer}')
         # can.drawString(12, 18, f'{customer}')
-        # can.setFont("Helvetica-Bold", 40)
-        # can.drawString(12, 685, f'ROUTE {route} - {customer}')
+        can.setFont("Helvetica-Bold", 40)
+        can.drawString(450, -50, f'{route}')
         can.save()
         #move to the beginning of the StringIO buffer
         packet.seek(0)
