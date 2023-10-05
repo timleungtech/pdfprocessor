@@ -14,3 +14,4 @@ This script runs at O(n) time complexity. Hash tables are included in the beginn
 * ~~Connect the script to a more user-friendly front end interface.~~ View full app here: https://github.com/timleungtech/pdf-processor-react-flask
 
 ![sample](https://github.com/timleungtech/pdfprocessor/blob/master/sample.jpg)
+![sample2](https://github.com/timleungtech/pdfprocessor/blob/master/sample2.jpg)
