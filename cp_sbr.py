@@ -96,6 +96,10 @@ pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
 lastpage = pdfReader.numPages
 
 with pdfplumber.open('input.pdf') as pdf:
+    # fix blank last page
+    if pdf.pages[lastpage-1].extract_text().find('Customer: ') == -1:
+        lastpage = lastpage - 1
+
     for i in range(lastpage):
         curr_page = pdf.pages[i]
 
