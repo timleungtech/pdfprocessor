@@ -13,7 +13,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.colors import red
 from reportlab.lib.colors import Color, red
 
-dictroute = {
+routes = {
   "000113": "3",
   "000114": "1",
   "000118": "2",
@@ -49,7 +49,7 @@ dictroute = {
   "003013": "3"
 }
 
-dictCustomer = {
+customer_names = {
   "000113": "SOHO  ",
   "000114": "MADISON",
   "000118": "FIRST AVE",
@@ -88,39 +88,32 @@ dictCustomer = {
 page_id = 1 # fix for orders >1 page long
 outputName= ""
 
-getfile = str(input("File name: "))
-os.rename(f"{getfile}.pdf","input.pdf")
+get_file = str(input("File name: "))
+os.rename(f"{get_file}.pdf","input.pdf")
 
 pdfFileObj = open('input.pdf', 'rb')
 pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-lastpage = pdfReader.numPages
+last_page = pdfReader.numPages
 
 with pdfplumber.open('input.pdf') as pdf:
     # fix blank last page
-    if pdf.pages[lastpage-1].extract_text().find('Customer: ') == -1:
-        lastpage = lastpage - 1
+    if pdf.pages[last_page-1].extract_text().find('Customer: ') == -1:
+        last_page = last_page - 1
 
-    for i in range(lastpage):
+    for i in range(last_page):
         curr_page = pdf.pages[i]
-
-        # print(curr_page.extract_text())
         customer_idx = curr_page.extract_text().index('Customer: ') + 10
-        # print(customer_idx)
-        # print(curr_page.extract_text()[customer_idx:customer_idx+4])
-        customer_id = curr_page.extract_text()[customer_idx:customer_idx+4]
+        customer_id = curr_page.extract_text()[customer_idx:customer_idx + 4]
         is_mpq = customer_id.isnumeric()
-        # print(customer_id)
-        # print(is_mpq)
+
         if (is_mpq == True):
             customer_id = '00' + customer_id
         else:
             customer_id = '000' + customer_id
         customer_id = customer_id[0:6]
-        # print(customer_id)
-        # print(len(customer_id))
 
-        route = dictroute.get(f"{customer_id}")
-        customer = dictCustomer.get(f"{customer_id}")
+        route = routes.get(customer_id)
+        customer_name = customer_names.get(customer_id)
         path = ('input.pdf')
         pdf2 = PdfFileReader(path)
         pdf2_writer = PdfFileWriter()
@@ -137,18 +130,18 @@ with pdfplumber.open('input.pdf') as pdf:
         can = canvas.Canvas(packet, pagesize=letter)
         # can.setFont("Courier-Bold", 42)
         can.setFillColor(redtransparent)
-        # can.drawString(12, 15, f'ROUTE {route} - {customer}')
+        # can.drawString(12, 15, f'ROUTE {route} - {customer_name}')
         can.setFont("Helvetica-Bold", 110)
-        if (len(customer) == 6):
+        if (len(customer_name) == 6):
             can.setFont("Helvetica-Bold", 185)
-        if (len(customer) >= 9):
+        if (len(customer_name) >= 9):
             can.setFont("Helvetica-Bold", 95)
         can.rotate(90)
         can.setPageSize((850, 600))
-        can.drawString(12, -770, f'{customer}')
-        # can.drawString(12, 18, f'{customer}')
+        can.drawString(12, -770, customer_name)
+        # can.drawString(12, 18, f'{customer_name}')
         can.setFont("Helvetica-Bold", 20)
-        can.drawString(20, -70, f'{route}')
+        can.drawString(20, -70, route)
         can.save()
         #move to the beginning of the StringIO buffer
         packet.seek(0)
@@ -158,9 +151,9 @@ with pdfplumber.open('input.pdf') as pdf:
         existing_pdf = PdfFileReader(open(output_filename, "rb"))
         output = PdfFileWriter()
         # add the "watermark" (which is the new pdf) on the existing page
-        page2 = existing_pdf.getPage(0)
-        page2.mergePage(new_pdf.getPage(0))
-        output.addPage(page2)
+        watermark_page = existing_pdf.getPage(0)
+        watermark_page.mergePage(new_pdf.getPage(0))
+        output.addPage(watermark_page)
         outputStream = open(f'footer_{route}_{customer_id}_{page_id}.pdf', "wb")
         output.write(outputStream)
         print(f'Created: footer_{route}_{customer_id}_{page_id}.pdf')
@@ -184,9 +177,9 @@ if __name__ == '__main__':
     paths.sort()
     now = datetime.now()
     current_time = now.strftime("%H_%M_%S")
-    merger((f'_{getfile}_output_{current_time}.pdf'), paths)
-    outputName = (f'_{getfile}_output_{current_time}.pdf')
-    print ('Created: _{}_output_{}.pdf'.format(getfile, current_time))
+    merger((f'_{get_file}_output_{current_time}.pdf'), paths)
+    outputName = (f'_{get_file}_output_{current_time}.pdf')
+    print ('Created: _{}_output_{}.pdf'.format(get_file, current_time))
 for f in glob.glob("footer*.pdf"):
     os.remove(f)
 #merge page with footer end
