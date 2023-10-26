@@ -86,7 +86,7 @@ customer_names = {
 }
 
 page_id = 1 # fix for orders >1 page long
-outputName= ""
+output_file_name= ""
 
 get_file = str(input("File name: "))
 os.rename(f"{get_file}.pdf","input.pdf")
@@ -97,7 +97,7 @@ last_page = pdfReader.numPages
 
 with pdfplumber.open('input.pdf') as pdf:
     # fix blank last page
-    if pdf.pages[last_page-1].extract_text().find('Customer: ') == -1:
+    if pdf.pages[last_page - 1].extract_text().find('Customer: ') == -1:
         last_page = last_page - 1
 
     for i in range(last_page):
@@ -115,17 +115,17 @@ with pdfplumber.open('input.pdf') as pdf:
         route = routes.get(customer_id)
         customer_name = customer_names.get(customer_id)
         path = ('input.pdf')
-        pdf2 = PdfFileReader(path)
-        pdf2_writer = PdfFileWriter()
-        pdf2_writer.addPage(pdf2.getPage(i))
-        output_filename = 'input_{}_{}_{}.pdf'.format(
+        pdf_reader = PdfFileReader(path)
+        pdf_writer = PdfFileWriter()
+        pdf_writer.addPage(pdf_reader.getPage(i))
+        output_page_name = 'input_{}_{}_{}.pdf'.format(
             route, customer_id, page_id)
-        with open(output_filename, 'wb') as out:
-            pdf2_writer.write(out)
-        print('Created: {}'.format(output_filename))
+        with open(output_page_name, 'wb') as out:
+            pdf_writer.write(out)
+        print(f'Created: {output_page_name}')
 
 #bottom text start
-        redtransparent = Color( 255, 0, 0, alpha=0.4)
+        redtransparent = Color(255, 0, 0, alpha=0.4)
         packet = io.BytesIO()
         can = canvas.Canvas(packet, pagesize=letter)
         # can.setFont("Courier-Bold", 42)
@@ -139,7 +139,7 @@ with pdfplumber.open('input.pdf') as pdf:
         can.rotate(90)
         can.setPageSize((850, 600))
         can.drawString(12, -770, customer_name)
-        # can.drawString(12, 18, f'{customer_name}')
+        # can.drawString(12, 18, customer_name)
         can.setFont("Helvetica-Bold", 20)
         can.drawString(20, -70, route)
         can.save()
@@ -148,16 +148,16 @@ with pdfplumber.open('input.pdf') as pdf:
         # create a new PDF with Reportlab
         new_pdf = PdfFileReader(packet)
         # read your existing PDF
-        existing_pdf = PdfFileReader(open(output_filename, "rb"))
+        existing_pdf = PdfFileReader(open(output_page_name, "rb"))
         output = PdfFileWriter()
         # add the "watermark" (which is the new pdf) on the existing page
         watermark_page = existing_pdf.getPage(0)
         watermark_page.mergePage(new_pdf.getPage(0))
         output.addPage(watermark_page)
-        outputStream = open(f'footer_{route}_{customer_id}_{page_id}.pdf', "wb")
-        output.write(outputStream)
+        output_stream = open(f'footer_{route}_{customer_id}_{page_id}.pdf', "wb")
+        output.write(output_stream)
         print(f'Created: footer_{route}_{customer_id}_{page_id}.pdf')
-        outputStream.close()
+        output_stream.close()
         page_id += 1
 # #bottom text end
 
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     now = datetime.now()
     current_time = now.strftime("%H_%M_%S")
     merger((f'_{get_file}_output_{current_time}.pdf'), paths)
-    outputName = (f'_{get_file}_output_{current_time}.pdf')
+    output_file_name = (f'_{get_file}_output_{current_time}.pdf')
     print ('Created: _{}_output_{}.pdf'.format(get_file, current_time))
 for f in glob.glob("footer*.pdf"):
     os.remove(f)
